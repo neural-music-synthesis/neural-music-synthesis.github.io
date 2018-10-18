@@ -17,7 +17,9 @@ mel2mel = (function(self) {
     const initialLoader = document.getElementById('initial-loader');
     const loader = document.getElementById('loader');
     const audio = document.getElementById('audio');
+    const player = document.getElementById('player');
 
+    self.stockMidi = false;
     self.midiData = new Float32Array(88*2 * MAX_STEPS);
     self.instruments = [
         'Grand Piano',
@@ -48,8 +50,7 @@ mel2mel = (function(self) {
         return image;
     });
     self.notes = [];
-
-    var timbreCoord = [0.5, 0.5];
+    self.timbreCoord = [0.5, 0.5];
 
     function setStatus(text) {
         status.textContent = text;
@@ -67,8 +68,8 @@ mel2mel = (function(self) {
 
     function runModel(salience) {
         const coord = tf.tensor1d([
-            timbreCoord[0] * (self.maxX - self.minX) + self.minX,
-            timbreCoord[1] * (self.maxY - self.minY) + self.minY
+            self.timbreCoord[0] * (self.maxX - self.minX) + self.minX,
+            self.timbreCoord[1] * (self.maxY - self.minY) + self.minY
         ]);
         const embedding = tf.tensor2d(self.inverseTransform).dot(coord).reshape([1, 1, 2]);
         const gamma1 = self.layers['film1/gamma'].call(embedding);
@@ -99,8 +100,8 @@ mel2mel = (function(self) {
         ctx.beginPath()
         ctx.fillStyle = 'red'
         var r = 4, inset = 2, n = 5;
-        var x = timbreCoord[0] * (timbre.width - TIMBRE_MARGIN*2) + TIMBRE_MARGIN;
-        var y = timbreCoord[1] * (timbre.height - TIMBRE_MARGIN*2) + TIMBRE_MARGIN
+        var x = self.timbreCoord[0] * (timbre.width - TIMBRE_MARGIN*2) + TIMBRE_MARGIN;
+        var y = self.timbreCoord[1] * (timbre.height - TIMBRE_MARGIN*2) + TIMBRE_MARGIN;
         ctx.save();
         ctx.translate(x, y);
         ctx.moveTo(0,0-r);
@@ -184,14 +185,15 @@ mel2mel = (function(self) {
         updateMel();
     }
 
-    function loadMidi(file) {
+    function loadMidi(file, stockMidi) {
+        self.stockMidi = (stockMidi === true);
         if (typeof file === 'string') {
             var xhr = new XMLHttpRequest();
             xhr.open("GET", file, true);
             xhr.responseType = "blob"
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4 && xhr.status === 200) {
-                    loadMidi(xhr.response);
+                    loadMidi(xhr.response, stockMidi);
                 }
             };
             xhr.send();
@@ -216,8 +218,8 @@ mel2mel = (function(self) {
     });
 
     timbre.addEventListener('click', function(e) {
-        timbreCoord[0] = (e.layerX - TIMBRE_MARGIN) / (timbre.width - TIMBRE_MARGIN*2);
-        timbreCoord[1] = (timbre.height - e.layerY - TIMBRE_MARGIN) / (timbre.height - TIMBRE_MARGIN * 2);
+        self.timbreCoord[0] = (e.layerX - TIMBRE_MARGIN) / (timbre.width - TIMBRE_MARGIN*2);
+        self.timbreCoord[1] = (timbre.height - e.layerY - TIMBRE_MARGIN) / (timbre.height - TIMBRE_MARGIN * 2);
         updateTimbre();
         updateMel();
     });
@@ -277,20 +279,32 @@ mel2mel = (function(self) {
 
     audio.addEventListener('click', function(e) {
         if (audio.classList.contains('ready')) {
-            audio.classList.remove('ready');
-            setStatus('Waiting for WaveNet response ...');
-            fetch('http://127.0.0.1/cgi-bin/post', {
-                method: 'POST',
-                mode: 'cors',
-                cache: 'no-cache',
-                body: self.output
-            }).then(response => {
-                playResponseAsStream(response, 16000 * 2);
-            }).then(_ => {
-                console.log('all stream bytes queued for decoding');
-            }).catch(e => {
-                console.error(e);
-            })
+            if (self.stockMidi) {
+                var x = self.timbreCoord[0] * (timbre.width - TIMBRE_MARGIN*2) + TIMBRE_MARGIN;
+                var y = self.timbreCoord[1] * (timbre.height - TIMBRE_MARGIN*2) + TIMBRE_MARGIN;
+                x = Math.round(x / 5) * 5 + 2;
+                y = Math.round(y / 5) * 5 + 2;
+                x = String(x).padStart(3, '0')
+                y = String(y).padStart(3, '0')
+                player.src = `runpixels/mel-${x}-${y}.pt.flac`;
+                player.play();
+                console.log(`playing ${player.src}`);
+            } else {
+                audio.classList.remove('ready');
+                setStatus('Waiting for WaveNet response ...');
+                fetch('http://127.0.0.1/cgi-bin/post', {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    body: self.output
+                }).then(response => {
+                    playResponseAsStream(response, 16000 * 2);
+                }).then(_ => {
+                    console.log('all stream bytes queued for decoding');
+                }).catch(e => {
+                    console.error(e);
+                })
+            }
         }
     })
     
@@ -337,7 +351,7 @@ mel2mel = (function(self) {
             updateTimbre();
             setStatus('Loading colormap ...');
             self.colormap = await tf.loadModel('colormaps/viridis/model.json');
-            loadMidi('midi/mendelssohn-wedding-march.mid');
+            loadMidi('midi/mendelssohn-wedding-march.mid', true);
         } catch (e) {
             setStatus('Error loading model');
             throw e;
