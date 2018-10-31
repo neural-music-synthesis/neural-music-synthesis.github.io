@@ -41,15 +41,14 @@
     const embeddingSpace = document.getElementById('embedding');
     const melCanvas = document.getElementById('mel-canvas');
     const ctx = melCanvas.getContext('2d');
+    const cursorMarker = document.getElementById('cursor-marker');
+    const playingMarker = document.getElementById('playing-marker');
 
     const self = scope.explorer = {};
     self.mels = null;
     self.image = new Uint8ClampedArray(4 * 80 * 250);
-
+    
     function draw(i, j) {
-        if (i < 0) i = 0; if (i >= 64) i = 63;
-        if (j < 0) j = 0; if (j >= 64) j = 63;
-
         const offset = (i * 64 + j) * 80 * 250;
         for (var y = 0; y < 80; y++) {
             for (var x = 0; x < 250; x++) {
@@ -66,25 +65,66 @@
     }
     self.draw = draw;
 
-    embeddingSpace.onmouseover = embeddingSpace.onmousemove = (e) => {
-        i = Math.round(e.offsetX / 4.0);
-        j = 63 - Math.round(e.offsetY / 4.0);
-        draw(i, j);
+    content.onmouseover = content.onmousemove = e => {
+        var rect = content.getBoundingClientRect()
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+        var i = Math.round(x / 4.0);
+        var j = 63 - Math.round(y / 4.0);
+
+        if (0 <= i && i < 64 && 0 <= j && j < 64) {
+            cursorMarker.style.left = x + 'px';
+            cursorMarker.style.top = y + 'px';            
+            draw(i, j);
+        }
     }
+
+    content.onclick = e => {
+        var rect = content.getBoundingClientRect()
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+        var i = Math.round(x / 4);
+        var j = 63 - Math.round(y / 4);
+
+        if (0 <= i && i < 64 && 0 <= j && j < 64) {
+            var src = 'runpixels/mel-' + ('000' + (i*5+2)).slice(-3) + '-' + ('000' + (j*5+2)).slice(-3) + '.pt.flac';
+            if (self.player.src != src) {
+                playingMarker.style.display = 'block';
+                playingMarker.style.left = x + 'px';
+                playingMarker.style.top = y + 'px';
+                self.player.src = src;
+                self.player.play();
+            }
+        }
+    }
+
+    const embeddingOptions = [...document.getElementsByClassName("embedding-option")];
+
+    embeddingOptions.forEach(element => {
+        element.onmouseover = () => {
+            if (!element.classList.contains('selected')) {
+                embeddingOptions.forEach(element => {
+                    element.classList.remove('selected');
+                })
+                element.classList.add('selected');
+                embeddingSpace.src = element.getAttribute('data-image');
+            }
+        }
+    });
 
     function download() {
         const xhr = new XMLHttpRequest();
         xhr.responseType = 'arraybuffer';
-        xhr.onprogress = function(e) {
+        xhr.onprogress = e => {
             if (e.lengthComputable) {
                 var percent = Math.round(e.loaded / e.total * 100);
                 downloadPercentage.innerHTML = percent + "%";
             }
         };
-        xhr.onerror = (e) => loadingStatus.innerHTML = "Error: error";
-        xhr.onabort = (e) => loadingStatus.innerHTML = "Error: aborted";
-        xhr.ontimeout = (e) => loadingStatus.innerHTML = "Error: timeout";
-        xhr.onreadystatechange = function(e) {
+        xhr.onerror = e => loadingStatus.innerHTML = "Error: error";
+        xhr.onabort = e => loadingStatus.innerHTML = "Error: aborted";
+        xhr.ontimeout = e => loadingStatus.innerHTML = "Error: timeout";
+        xhr.onreadystatechange = e => {
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 if (xhr.status == 200) {
                     self.mels = new Uint8ClampedArray(xhr.response);
@@ -100,5 +140,13 @@
         xhr.send();
     }
 
+    self.player = new MediaElementPlayer('player', {
+        audioWidth: 625,
+        audioHeight: 40,
+		pluginPath: 'https://cdnjs.com/libraries/mediaelement/',
+		success: function(mediaElement, originalNode) {
+            
+		}
+	});
     download();
 }(window);

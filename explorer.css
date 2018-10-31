@@ -1,8 +1,12 @@
 body {
     font-family: sans-serif;
     background: none transparent;
-    text-align: center;
     margin: 0;
+    font-size: 10pt;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 canvas {
@@ -15,10 +19,29 @@ canvas {
     -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
 }
 
+.embedding-option {
+    width: 128px;
+    height: 100%;
+    display: inline-block;
+    text-align: center;
+    background-color: hsl(212, 10%, 90%);
+    color: hsl(212, 10%, 40%);
+}
+
+.embedding-option:hover {
+    background-color: hsl(212, 31%, 90%);
+    color: hsl(212, 31%, 40%);
+}
+
+.embedding-option.selected, .embedding-option.selected:hover {
+    background-color: hsl(212, 62%, 80%);
+    color: hsl(212, 62%, 20%);
+}
+
 #container {
     position: relative;
-    width: 960px;
-    height: 306px;
+    width: 900px;
+    height: 310px;
     margin: auto;
 }
 
@@ -26,12 +49,44 @@ canvas {
     position: absolute;
     left: 0;
     top: 0;
-    line-height: 306px;
-    width: 960px;
+    background: hsl(0, 0%, 90%);
+    line-height: 310px;
+    width: 900px;
+    text-align: center;
 }
+
+#cursor-marker {
+    position: absolute;
+    left: 128px;
+    top: 128px;
+    text-align: center;
+    line-height: 20px;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    background-image: url('star.svg');    
+}
+
+#playing-marker {
+    display: none;
+    position: absolute;
+    left: 128px;
+    top: 128px;
+    text-align: center;
+    line-height: 20px;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    background-image: url('play.svg');    
+}
+
 
 #content {
     display: none;
+}
+
+#main-row {
+    height: 256px;
 }
 
 #embedding {
@@ -43,7 +98,29 @@ canvas {
     height: 256px;
 }
 
-.spacing {
+.hspace {
     display: inline-block;
-    width: 20px;
+    width: 19px;
+}
+
+.vspace {
+    height: 14px;
+}
+
+#helper-row {
+    height: 40px;
+    line-height: 40px;
+    vertical-align: top;
+}
+
+.mejs__audio {
+    display: inline-block;
+}
+
+.mejs__container {
+    background-color: hsl(212, 62%, 20%) !important;
+}
+
+.mejs__controls:not([style*="display: none"]) {
+    background: hsl(212, 62%, 20%) !important;
 }

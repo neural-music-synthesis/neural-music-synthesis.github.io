@@ -2,14 +2,20 @@
 <head>
 <title>Neural Music Synthesis for Flexible Timbre Control</title>
 <link rel="stylesheet" type="text/css" href="explorer.css">
+<link rel="stylesheet" type="text/css" href="mejs/mediaelementplayer.min.css">
 </head>
 <body>
 <div id="container">
 <div id="loading">Downloading... (<span id="download-percentage">0%</span>)</div>
 <div id="content">
-    <img id="embedding" src="centroids.svg" width="256" height="256"><span class="spacing"></span><canvas id="mel-canvas" width="250" height="80">
+    <div id="playing-marker"></div><div id="cursor-marker"></div>
+    <div id="main-row"><img id="embedding" src="centroids.svg" width="256" height="256"><span class="hspace"></span><canvas id="mel-canvas" width="250" height="80"></canvas></div>
+    <div class="vspace"></div>
+    <div id="helper-row"><div data-image="centroids.svg" class="embedding-option selected">Spectral Centroid</div><div data-image="energy.svg" class="embedding-option">Mean Energy</div><span class="hspace"></span><audio id="player">
+    </audio></div>
 </div>
 </div>
+<script src="mejs/mediaelement-and-player.min.js"></script>
 <script src="explorer.js"></script>
 </body>
 </html>
