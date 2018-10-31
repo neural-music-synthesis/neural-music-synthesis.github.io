@@ -117,10 +117,6 @@ canvas {
     display: inline-block;
 }
 
-.mejs__container {
-    background-color: hsl(212, 62%, 20%) !important;
-}
-
 .mejs__controls:not([style*="display: none"]) {
-    background: hsl(212, 62%, 20%) !important;
+    background: hsl(212, 50%, 30%) !important;
 }

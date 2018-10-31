@@ -1,0 +1,43 @@
+<!doctype html>
+<head>
+<title>Neural Music Synthesis for Flexible Timbre Control</title>
+<link rel="stylesheet" type="text/css" href="index.css">
+</head>
+<body>
+<div id="content">
+<h1>Neural Music Synthesis for Flexible Timbre Control</h1>
+
+<div id="authors">
+    Jong Wook Kim<sup>1,2</sup>, Rachel Bittner<sup>2</sup>, Aparna Kumar<sup>2</sup>, Juan Pablo Bello<sup>1</sup><br>
+    <small><sup>1</sup>Music and Audio Research Laboratory, New York University <sup>2</sup>Spotify</small>
+</div>
+
+<hr>
+
+<h2>Explore the timbre space</h2>
+<p>
+    The 2-dimensional timbre embedding space is visualized below, annotated with the 10 instrument icons.
+    You can select either spectral centroids or mean energy for colorcoding the space.
+    The Mel spectrogram is shown corresponding to the point where the mouse cursor is on, and you can listen to the synthesized sound by clicking on the embedding space.
+</p>
+
+<iframe src="explorer.html" width="100%" height="320px" frameborder="0" allowtransparency="true"></iframe>
+
+<h2>Try with your own MIDI files</h2>
+<center>
+    <a href="mel2mel.html"><img alt="TensorFlow.js demo screenshot" src="mel2mel.png" width="500"></a>
+</center>
+<p>
+    The example above plays pre-rendered Mel spectrograms and audio. Try <a href="mel2mel.html">our TensorFlow.js demo</a>,
+    where you can run the Mel2Mel model directly on browser. You can also upload your own MIDI file in this demo.
+    The demo requires a WebGL-enabled browser such as desktop Chrome, and it may not run properly on mobile browsers or external monitors.
+</p>
+
+<h2>100-instrument timbre space visualization</h2>
+<p>
+    TBA!
+</p>
+
+</div>
+</body>
+</html>
