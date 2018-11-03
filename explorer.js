@@ -35,13 +35,25 @@
         [236,229, 27,255], [239,229, 28,255], [241,229, 29,255], [244,230, 30,255], [246,230, 32,255], [248,230, 33,255], [251,231, 35,255], [253,231, 37,255], 
     ];
 
+    const instrument_coords = {
+        'Grand Piano': [92, 157],
+        'Electric Piano': [115, 228],
+        'Vibraphone': [28, 149],
+        'Church Organ': [228, 140],
+        'Acoustic Guitar': [131, 191],
+        'Pizzicato Strings': [48, 85],
+        'Orchestral Harp': [71, 212],
+        'String Ensemble': [178, 61],
+        'Trumpet': [184, 186],
+        'Synth Lead': [58, 28],
+    }
+
     const loadingStatus = document.getElementById('loading');
     const downloadPercentage = document.getElementById('download-percentage');
     const content = document.getElementById('content');
     const embeddingSpace = document.getElementById('embedding');
     const melCanvas = document.getElementById('mel-canvas');
     const ctx = melCanvas.getContext('2d');
-    const cursorMarker = document.getElementById('cursor-marker');
     const playingMarker = document.getElementById('playing-marker');
 
     const self = scope.explorer = {};
@@ -73,8 +85,20 @@
         var j = 63 - Math.round(y / 4.0);
 
         if (0 <= i && i < 64 && 0 <= j && j < 64) {
-            cursorMarker.style.left = x + 'px';
-            cursorMarker.style.top = y + 'px';            
+            console.log(`${i}, ${j}: ${key}`);
+            var showtip = false;
+            for (var key in instrument_coords) {
+                if (Math.abs(instrument_coords[key][0] - i * 4) <= 20 && Math.abs(instrument_coords[key][1] - j * 4) <= 20) {
+                    [...document.getElementsByClassName("tippy-content")].forEach(element => {
+                        element.innerHTML = key;
+                        showtip = true;
+                    })
+                }
+            }
+            [...document.getElementsByClassName('tippy-popper')].forEach(element => {
+                element.style.display = showtip ? 'block' : 'none';
+            })
+            
             draw(i, j);
         }
     }
@@ -144,9 +168,10 @@
         audioWidth: 625,
         audioHeight: 40,
 		pluginPath: 'https://cdnjs.com/libraries/mediaelement/',
-		success: function(mediaElement, originalNode) {
-            
-		}
+		success: function(mediaElement, originalNode) {}
 	});
+
+    tippy.setDefaults({placement: 'bottom', followCursor: true, duration: 0});
+    tippy('#embedding');
     download();
 }(window);

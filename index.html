@@ -5,7 +5,7 @@
 </head>
 <body>
 <div id="content">
-<h1>Neural Music Synthesis for Flexible Timbre Control</h1>
+<h1>Neural Music Synthesis for Flexible Timbre Control<small> <a href="https://arxiv.org/abs/1811.00223" target="_blank">[arXiv]</a></small></h1>
 
 <div id="authors">
     Jong Wook Kim<sup>1,2</sup>, Rachel Bittner<sup>2</sup>, Aparna Kumar<sup>2</sup>, Juan Pablo Bello<sup>1</sup><br>
@@ -14,7 +14,22 @@
 
 <hr>
 
-<h2>Explore the timbre space</h2>
+<img src="architecture.svg" style="width: 510px; float: right; margin: 20px;">
+<h2>What is this?</h2>
+
+<p>
+    We created a neural music synthesis model named Mel2Mel,
+    which consists of a recurrent neural network conditioned on a learned instrument embedding followed by a WaveNet vocoder.
+    The network takes a note sequence as input and predicts the corresponding Mel spectrogram,
+    which is then used for conditioning the WaveNet vocoder to produce music.
+</p>
+<p>
+    This web demo provides synthesized audio samples and interactive visualizations of the learned timbre embedding space.
+    For more details, please check out our <a href="https://arxiv.org/abs/1811.00223" target="_blank">paper</a>
+    submitted to ICASSP 2019.
+</p>
+
+<h2 style="clear: both;">Explore the timbre space</h2>
 <p>
     The 2-dimensional timbre embedding space is visualized below, annotated with the 10 instrument icons.
     You can select either spectral centroids or mean energy for colorcoding the space.
@@ -24,9 +39,9 @@
 <iframe src="explorer.html" width="100%" height="320px" frameborder="0" allowtransparency="true"></iframe>
 
 <h2>Try with your own MIDI files</h2>
-<center>
+<p style="text-align: center;">
     <a href="mel2mel.html"><img alt="TensorFlow.js demo screenshot" src="mel2mel.png" width="500"></a>
-</center>
+</p>
 <p>
     The example above plays pre-rendered Mel spectrograms and audio. Try <a href="mel2mel.html">our TensorFlow.js demo</a>,
     where you can run the Mel2Mel model directly on browser. You can also upload your own MIDI file in this demo.

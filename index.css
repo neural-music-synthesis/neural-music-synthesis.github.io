@@ -5,6 +5,7 @@ body {
     margin: 0 auto;
     font-family: Helvetica Neue, sans-serif;
     line-height: 1.5;
+    text-align: justify;
 }
 
 * {
@@ -23,6 +24,10 @@ h1 {
 h2 {
     font-size: 16pt;
     margin: 30px 0 10px 0;
+}
+
+small {
+    font-size: 11pt;
 }
 
 hr {
