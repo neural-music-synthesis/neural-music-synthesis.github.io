@@ -1,0 +1,30 @@
+<!doctype html>
+<head>
+    <title>test-flacs</title>
+    <link rel="stylesheet" href="test-flacs.css">
+    <link rel="stylesheet" type="text/css" href="mejs/mediaelementplayer.min.css">
+</head>
+<body>
+<div id="test-flacs">
+
+<div id="instrument-selector"></div>
+
+<table cellspacing="0" cellpadding="5">
+<thead>
+    <tr>
+        <th id="midi-column">MIDI file</th>
+        <th>Original</th>
+        <th>μ-law only</th>
+        <th>WaveNet:<br>ground-truth Mel</th>
+        <th>WaveNet:<br>tanh-log-abs MSE</th>
+        <th>WaveNet:<br>log-abs MSE</th>
+        <th>WaveNet:<br>abs MSE</th>
+    </tr>
+</thead>
+
+</table>
+</div>
+<script src="mejs/mediaelement-and-player.min.js"></script>
+<script src="test-flacs.js"></script>
+</body>
+</html>

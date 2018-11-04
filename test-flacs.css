@@ -1,0 +1,68 @@
+body {
+    font-family: sans-serif;
+    background: none transparent;
+    margin: 0;
+    font-size: 14pt;
+    transform: scale(0.6666);
+    transform-origin: top left;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+#test-flacs {
+    width: 1350px;
+    margin: auto;
+}
+
+#instrument-selector {
+    margin-bottom: 10px;
+}
+
+#instrument-selector > div {
+    display: inline-block;
+    width: 270px;
+    height: 45px;
+    line-height: 45px;
+    text-align: center;
+    cursor: pointer;
+    background-color: hsl(212, 80%, 96%);
+    color: hsl(212, 31%, 40%);
+}
+
+#instrument-selector > div.selected {
+    background-color: hsl(212, 80%, 90%);
+    color: hsl(212, 62%, 20%);
+    font-weight: bold;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+tr {
+    height: 50px;
+}
+
+th {
+    width: 180px;
+    background: hsl(212, 80%, 90%);
+}
+
+th#midi-column {
+    width: 270px;
+}
+
+td {
+    background: hsl(212, 80%, 96%);
+}
+
+table, th, td {
+    font-weight: normal;
+}
+
+.mejs__controls:not([style*="display: none"]) {
+    background: hsl(212, 50%, 30%) !important;
+}
