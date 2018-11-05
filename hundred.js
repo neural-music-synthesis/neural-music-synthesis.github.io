@@ -47,22 +47,16 @@
     controls.noZoom = true;
     controls.noPan = true;
 
-    var mousedown = false;
-    function setLeftButtonState(e) {
-        mousedown = e.buttons === undefined ? e.which & 1 : e.buttons & 1;
-    }
-    document.body.onmousedown = setLeftButtonState;
-    document.body.onmousemove = setLeftButtonState;
-    document.body.onmouseup = setLeftButtonState;
-    var mouseover = false;
-    viewer.onmouseover = () => {mouseover = true;}
-    viewer.onmouseout = () => {mouseover = false;}
-
+    var autorotate = true;
+    renderer.domElement.addEventListener('mousedown', () => {
+        autorotate = false;
+    });
+    
     function animate() {
         requestAnimationFrame( animate );
         renderer.render( scene, camera );
         controls.update();
-        if (!mouseover && !mousedown) {
+        if (autorotate) {
             controls._moveCurr.x += 0.005;
             controls._moveCurr.y += 0.002;
         }
