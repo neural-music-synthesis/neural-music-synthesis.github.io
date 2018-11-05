@@ -8,17 +8,17 @@
     const energy = [70, 54, 59, 104, 75, 46, 69, 54, 53, 62, 140, 39, 23, 44, 104, 101, 126, 86, 118, 105, 113, 85, 89, 55, 66, 88, 61, 93, 101, 28, 70, 69, 87, 57, 131, 29, 108, 110, 109, 113, 99, 108, 179, 73, 91, 90, 45, 144, 56, 83, 79, 114, 123, 100, 117, 143, 144, 140, 117, 90, 82, 255, 222, 160, 180, 169, 122, 165, 145, 95, 96, 129, 81, 99, 61, 109, 127, 94, 116, 121, 117, 49, 72, 56, 18, 46, 0, 30, 54, 60, 127, 122, 67, 103, 66, 40, 76, 141, 107, 162];
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color("hsl(212, 50%, 3%)");
+    scene.background = new THREE.Color("hsl(212, 50%, 100%)");
 
-    const fieldOfView = 75;
+    const fieldOfView = 50;
     const aspectRatio = 1.0;
     const nearPlane = 0.1;
-    const farPlane = 400;
+    const farPlane = 800;
     
     scene.fog = new THREE.Fog(scene.background, nearPlane, farPlane);
 
     const camera = new THREE.PerspectiveCamera(fieldOfView, aspectRatio, nearPlane, farPlane);
-    camera.position.z = 200;
+    camera.position.z = 300;
 
     const viewer = document.getElementById('viewer');
     const renderer = new THREE.WebGLRenderer({antialias: true});
@@ -36,7 +36,7 @@
 
     for (var i = 0; i < 100; i++) {
         var geometry = new THREE.SphereGeometry(5, 32, 32);
-        var material = new THREE.MeshPhongMaterial({color: cmap[centroids[i]]});
+        var material = new THREE.MeshBasicMaterial({color: cmap[centroids[i]]});
         var sphere = new THREE.Mesh(geometry, material);
         spheres.push(sphere);
         scene.add(sphere);
@@ -44,12 +44,28 @@
     }
 
     const controls = new THREE.TrackballControls(camera, renderer.domElement);
+    controls.noZoom = true;
+    controls.noPan = true;
+
+    var mousedown = false;
+    function setLeftButtonState(e) {
+        mousedown = e.buttons === undefined ? e.which & 1 : e.buttons & 1;
+    }
+    document.body.onmousedown = setLeftButtonState;
+    document.body.onmousemove = setLeftButtonState;
+    document.body.onmouseup = setLeftButtonState;
+    var mouseover = false;
+    viewer.onmouseover = () => {mouseover = true;}
+    viewer.onmouseout = () => {mouseover = false;}
 
     function animate() {
         requestAnimationFrame( animate );
         renderer.render( scene, camera );
         controls.update();
-        // light1.position.set(camera.position.x, camera.position.y, camera.position.z);
+        if (!mouseover && !mousedown) {
+            controls._moveCurr.x += 0.005;
+            controls._moveCurr.y += 0.002;
+        }
         lightHolder.quaternion.copy(camera.quaternion);
     }
     animate();
@@ -70,6 +86,7 @@
         scene: scene,
         camera: camera,
         renderer: renderer,
-        spheres: spheres
+        spheres: spheres,
+        controls: controls
     };
 }(window);

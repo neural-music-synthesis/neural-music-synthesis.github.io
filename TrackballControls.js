@@ -63,6 +63,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 		_panStart = new THREE.Vector2(),
 		_panEnd = new THREE.Vector2();
 
+	this._movePrev = _movePrev;
+	this._moveCurr = _moveCurr;
 	// for reset
 
 	this.target0 = this.target.clone();
@@ -445,13 +447,13 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		if ( _this.enabled === false ) return;
 
-		event.preventDefault();
-		event.stopPropagation();
-
-		_state = STATE.NONE;
-
-		document.removeEventListener( 'mousemove', mousemove );
-		document.removeEventListener( 'mouseup', mouseup );
+		event.preventDefault();_moveCurr
+		event.stopPropagation();_moveCurr
+_moveCurr
+		_state = STATE.NONE;_moveCurr
+_moveCurr
+		document.removeEventListener( 'm_moveCurrousemove', mousemove );
+		document.removeEventListener( 'm_moveCurrouseup', mouseup );
 		_this.dispatchEvent( endEvent );
 
 	}
