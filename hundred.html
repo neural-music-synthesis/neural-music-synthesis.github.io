@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head>
+    <title>Hundred Embedings Viewer</title>
+    <link rel="stylesheet" href="hundred.css">
+</head>
+<body>
+<div id="container"><div id="viewer"></div><div id="info">
+    <p><b>Color scheme:</b></p>
+    <div style="text-align: center;"><div class="color-selector selected" onclick="updateColors(this);" data-criteria="centroids">Spectral Centroids</div><div class="color-selector" onclick="updateColors(this);" data-criteria="energy">Mean Energy</div></div>
+</div></div>
+<script src="three.min.js"></script>
+<script src="TrackballControls.js"></script>
+<script src="hundred.js"></script>
+</body>
+</html>
