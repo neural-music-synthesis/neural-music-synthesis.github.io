@@ -9,11 +9,16 @@ body {
     box-sizing: border-box;
 }
 
+hr {
+    border-width: 1px 0 0 0;
+    border-style: solid;
+    border-color: hsl(212, 62%, 20%);
+}
+
 #container {
     width: 900px;
     height: 600px;
     margin: auto;
-    cursor: grab;
 }
 
 #viewer {
@@ -21,6 +26,7 @@ body {
     width: 600px;
     height: 600px;
     float: left;
+    cursor: grab;
 }
 
 #info {
@@ -47,4 +53,21 @@ body {
     background-color: hsl(212, 62%, 80%);
     color: hsl(212, 62%, 20%);
 }
-    
+
+.mejs__controls:not([style*="display: none"]) {
+    background: hsl(212, 50%, 30%) !important;
+}
+
+#toggle-rotation {
+    height: 30px;
+    text-align: center;
+    background-color: hsl(212, 31%, 90%);
+    color: hsl(212, 31%, 40%);
+    line-height: 30px;
+    cursor: pointer;
+}
+
+#toggle-rotation:hover {
+    background-color: hsl(212, 62%, 80%);
+    color: hsl(212, 62%, 20%);
+}

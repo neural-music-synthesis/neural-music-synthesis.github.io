@@ -7,13 +7,21 @@
     const centroids = [52, 102, 109, 15, 94, 175, 169, 107, 208, 75, 33, 116, 234, 127, 32, 38, 28, 108, 90, 121, 107, 128, 45, 92, 46, 49, 89, 74, 47, 84, 58, 97, 140, 83, 25, 87, 148, 99, 91, 95, 65, 76, 71, 123, 98, 65, 203, 37, 193, 171, 145, 73, 75, 52, 81, 22, 34, 28, 114, 116, 87, 0, 1, 125, 117, 95, 120, 75, 86, 23, 109, 89, 94, 110, 35, 64, 83, 111, 69, 46, 123, 255, 140, 96, 250, 63, 165, 249, 35, 92, 13, 29, 6, 133, 41, 42, 18, 113, 108, 92];
     const energy = [70, 54, 59, 104, 75, 46, 69, 54, 53, 62, 140, 39, 23, 44, 104, 101, 126, 86, 118, 105, 113, 85, 89, 55, 66, 88, 61, 93, 101, 28, 70, 69, 87, 57, 131, 29, 108, 110, 109, 113, 99, 108, 179, 73, 91, 90, 45, 144, 56, 83, 79, 114, 123, 100, 117, 143, 144, 140, 117, 90, 82, 255, 222, 160, 180, 169, 122, 165, 145, 95, 96, 129, 81, 99, 61, 109, 127, 94, 116, 121, 117, 49, 72, 56, 18, 46, 0, 30, 54, 60, 127, 122, 67, 103, 66, 40, 76, 141, 107, 162];
 
+    var player = new MediaElementPlayer('player', {
+        audioWidth: 280,
+        audioHeight: 40,
+        features: ['playpause', 'progress', 'volume'],
+		pluginPath: 'https://cdnjs.com/libraries/mediaelement/',
+		success: function(mediaElement, originalNode) {}
+	});
+
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("hsl(212, 50%, 100%)");
 
     const fieldOfView = 50;
     const aspectRatio = 1.0;
-    const nearPlane = 0.1;
-    const farPlane = 800;
+    const nearPlane = 150;
+    const farPlane = 450;
     
     scene.fog = new THREE.Fog(scene.background, nearPlane, farPlane);
 
@@ -38,6 +46,7 @@
         var geometry = new THREE.SphereGeometry(5, 32, 32);
         var material = new THREE.MeshBasicMaterial({color: cmap[centroids[i]]});
         var sphere = new THREE.Mesh(geometry, material);
+        sphere.instrument = instruments[i];
         spheres.push(sphere);
         scene.add(sphere);
         sphere.position.set(X[i], Y[i], Z[i]);
@@ -48,10 +57,82 @@
     controls.noPan = true;
 
     var autorotate = true;
+    var mousedown = false;
+    var dragging = false;
     renderer.domElement.addEventListener('mousedown', () => {
         autorotate = false;
+        mousedown = true;
     });
-    
+
+    var mouse = new THREE.Vector2();
+    var raycaster = new THREE.Raycaster();
+    var currentSphere = null;
+    renderer.domElement.addEventListener('mousemove', e => {
+        mouse.x = ((event.clientX - renderer.domElement.offsetLeft) / renderer.domElement.clientWidth) * 2 - 1;
+        mouse.y = - ((event.clientY - renderer.domElement.offsetTop) / renderer.domElement.clientHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        var intersects = raycaster.intersectObjects(spheres);
+
+        if(intersects.length > 0) {
+            viewer.style.cursor = 'pointer';
+            autorotate = false;
+            var intersect = intersects[0].object;
+            if (intersect !== currentSphere) {
+                currentSphere = intersect;
+                [...document.getElementsByClassName("tippy-content")].forEach(element => {
+                    element.innerHTML = `${intersect.instrument[2]}<br>(${intersect.instrument[0]})`;
+                });
+                [...document.getElementsByClassName('tippy-popper')].forEach(element => {
+                    element.style.display = 'block';
+                });
+                document.getElementById('soundfont-info').innerHTML = intersect.instrument[0];
+                document.getElementById('midi-info').innerHTML = `${intersect.instrument[1]} ${intersect.instrument[2]}`;
+            }
+        } else {
+            viewer.style.cursor = 'grab';
+            currentSphere = null;
+            [...document.getElementsByClassName('tippy-popper')].forEach(element => {
+                element.style.display = 'none';
+            });
+            document.getElementById('soundfont-info').innerHTML = "";
+            document.getElementById('midi-info').innerHTML = "";
+        }
+        if (mousedown) {
+            dragging = true;
+        }
+    });
+
+    renderer.domElement.addEventListener('mouseup', e => {
+        if (!dragging && currentSphere) {
+            player.remove();
+            document.getElementById('player').src = `hundred-samples/${currentSphere.instrument[0]}-${currentSphere.instrument[1]}.flac`;
+            player = new MediaElementPlayer('player', {
+                audioWidth: 280,
+                audioHeight: 40,
+                features: ['playpause', 'progress', 'volume'],
+                pluginPath: 'https://cdnjs.com/libraries/mediaelement/',
+                success: function(mediaElement, originalNode) {}
+            });
+            setTimeout(() => {
+                player.play();
+            }, 0);
+        }
+
+        dragging = false;
+        mousedown = false;
+
+        setTimeout(() => {
+            var event = document.createEvent('MouseEvents');
+            event.initEvent('mouseenter', true, true);
+            renderer.domElement.dispatchEvent(event);
+                setTimeout(() => {
+                var event = new MouseEvent('mousemove', e);
+                renderer.domElement.dispatchEvent(event);
+            }, 0);
+        }, 0);
+    });
+
     function animate() {
         requestAnimationFrame( animate );
         renderer.render( scene, camera );
@@ -64,23 +145,32 @@
     }
     animate();
 
+    var currentCriteria = 'centroids';
     scope.updateColors = element => {
         const criteria = element.getAttribute("data-criteria");
-        const array = (criteria === "centroids") ? centroids : energy;
-        for (var i = 0; i < 100; i++) {
-            spheres[i].material.color = new THREE.Color(cmap[array[i]]);
+        if (criteria !== currentCriteria) {
+            currentCriteria = criteria;
+            const array = (criteria === "centroids") ? centroids : energy;
+            for (var i = 0; i < 100; i++) {
+                spheres[i].material.color = new THREE.Color(cmap[array[i]]);
+            }
+            [...document.getElementsByClassName('color-selector')].forEach(el => {
+                el.classList.remove('selected');
+            })
+            element.classList.add('selected');
         }
-        [...document.getElementsByClassName('color-selector')].forEach(el => {
-            el.classList.remove('selected');
-        })
-        element.classList.add('selected');
     }
+
+    tippy.setDefaults({placement: 'bottom', followCursor: true, duration: 0});
+    tippy(renderer.domElement);
 
     scope.hundred = {
         scene: scene,
         camera: camera,
         renderer: renderer,
         spheres: spheres,
-        controls: controls
+        controls: controls,
+        player: player,
+        toggleRotation: () => autorotate = !autorotate
     };
 }(window);

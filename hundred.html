@@ -3,14 +3,27 @@
 <head>
     <title>Hundred Embedings Viewer</title>
     <link rel="stylesheet" href="hundred.css">
+    <link rel="stylesheet" type="text/css" href="mejs/mediaelementplayer.min.css">
 </head>
 <body>
 <div id="container"><div id="viewer"></div><div id="info">
     <p><b>Color scheme:</b></p>
-    <div style="text-align: center;"><div class="color-selector selected" onclick="updateColors(this);" data-criteria="centroids">Spectral Centroids</div><div class="color-selector" onclick="updateColors(this);" data-criteria="energy">Mean Energy</div></div>
+    <div style="text-align: center;"
+        ><div class="color-selector selected" onmousemove="updateColors(this);" data-criteria="centroids">Spectral Centroids</div
+        ><div class="color-selector" onmousemove="updateColors(this);" data-criteria="energy">Mean Energy</div
+    ></div>
+    <p><b>SoundFont:</b> <span id="soundfont-info"></span></p>
+    <p><b>MIDI Program:</b> <span id="midi-info"></span></p>
+    <hr>
+    <p>Click a dot to play the soundfont sample:</p>
+    <p><audio id="player"></audio></p>
+    <hr>
+    <div id="toggle-rotation" onclick="hundred.toggleRotation();">Toggle rotation</div>
 </div></div>
 <script src="three.min.js"></script>
 <script src="TrackballControls.js"></script>
+<script src="mejs/mediaelement-and-player.min.js"></script>
+<script src="tippy.all.min.js"></script>
 <script src="hundred.js"></script>
 </body>
 </html>

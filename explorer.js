@@ -85,19 +85,18 @@
         var j = 63 - Math.round(y / 4.0);
 
         if (0 <= i && i < 64 && 0 <= j && j < 64) {
-            console.log(`${i}, ${j}: ${key}`);
             var showtip = false;
             for (var key in instrument_coords) {
                 if (Math.abs(instrument_coords[key][0] - i * 4) <= 20 && Math.abs(instrument_coords[key][1] - j * 4) <= 20) {
                     [...document.getElementsByClassName("tippy-content")].forEach(element => {
                         element.innerHTML = key;
                         showtip = true;
-                    })
+                    });
                 }
             }
             [...document.getElementsByClassName('tippy-popper')].forEach(element => {
                 element.style.display = showtip ? 'block' : 'none';
-            })
+            });
             
             draw(i, j);
         }
